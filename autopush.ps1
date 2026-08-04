@@ -1,27 +1,17 @@
-$folder = $PSScriptRoot
+# autopush.ps1 — run from project folder, keep window open
+Set-Location $PWD
+$folder = (Get-Location).Path
+Write-Host "Watching: $folder"
+Write-Host "Press Ctrl+C to stop."
 
-$watcher = New-Object System.IO.FileSystemWatcher
-$watcher.Path = $folder
-$watcher.IncludeSubdirectories = $true
-$watcher.EnableRaisingEvents = $true
-
-$action = {
-    Start-Sleep -Seconds 3
-    Set-Location $Event.MessageData
-    $status = git status --porcelain
+while ($true) {
+    Start-Sleep -Seconds 5
+    $status = & git -C $folder status --porcelain 2>$null
     if ($status) {
-        git add -A
+        & git -C $folder add -A
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        git commit -m "auto: $timestamp"
-        git push origin main
+        & git -C $folder commit -m "auto: $timestamp"
+        & git -C $folder push origin main
         Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Pushed changes"
     }
 }
-
-Register-ObjectEvent $watcher "Changed" -Action $action -MessageData $folder
-Register-ObjectEvent $watcher "Created" -Action $action -MessageData $folder
-Register-ObjectEvent $watcher "Deleted" -Action $action -MessageData $folder
-Register-ObjectEvent $watcher "Renamed" -Action $action -MessageData $folder
-
-Write-Host "Watching: $folder"
-while ($true) { Start-Sleep -Seconds 1 }
