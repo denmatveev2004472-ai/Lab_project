@@ -1440,6 +1440,11 @@ async function deleteCellBooking(b) {
 }
 
 const cellWeekDates = computed(() => cellBookingWeek.value === 'this' ? thisWeekDates.value : nextWeekDates.value)
+const expandedCellBox = ref(null)
+function toggleCellBox(box) {
+  expandedCellBox.value = expandedCellBox.value === box ? null : box
+  if (expandedCellBox.value) loadCellBookings()
+}
 
 // ─── EXPERIMENTS MODULE ──────────────────────────────────────────────────────
 const activeExperimentTab = ref('alamar')
@@ -1813,8 +1818,15 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div v-for="box in [1,2]" :key="box" class="cell-box-section">
-              <div class="cell-box-header">{{ t('cellBox') }} №{{ box }}</div>
-              <div v-if="!isMobile" class="booking-grid">
+              <button
+                class="cell-box-accordion-btn"
+                :class="{ 'cell-box-accordion-open': expandedCellBox === box }"
+                @click="toggleCellBox(box)"
+              >
+                <span>🧫 {{ t('cellBox') }} №{{ box }}</span>
+                <span class="cell-box-accordion-arrow">{{ expandedCellBox === box ? '▲' : '▼' }}</span>
+              </button>
+              <div v-if="!isMobile && expandedCellBox === box" class="booking-grid">
                 <div v-for="day in cellWeekDates" :key="toDateStr(day)+'-box-'+box" class="booking-day-col">
                   <div class="booking-day-header" :class="{ 'day-today': toDateStr(day) === toDateStr(new Date()) }">
                     <div class="booking-day-name">{{ formatDate(day) }}</div>
@@ -1834,7 +1846,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                   </div>
                 </div>
               </div>
-              <div v-else class="booking-mobile-list">
+              <div v-else-if="expandedCellBox === box" class="booking-mobile-list">
                 <div v-for="day in cellWeekDates" :key="toDateStr(day)+'-box-'+box" class="booking-mobile-day">
                   <div class="booking-mobile-day-header" :class="{ 'day-today': toDateStr(day) === toDateStr(new Date()) }">
                     <span>{{ formatDate(day) }}</span>
@@ -2709,6 +2721,17 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .cell-culture-title { font-family: var(--font-display); font-size: var(--text-lg); color: var(--color-primary); }
 .cell-box-section { margin-top: var(--space-4); }
 .cell-box-header { font-weight: 700; font-size: var(--text-sm); margin-bottom: var(--space-2); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .05em; }
+.cell-box-accordion-btn {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface); border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg); font-weight: 700; font-size: var(--text-base);
+  color: var(--color-text); margin-bottom: var(--space-2);
+  transition: border-color .15s, background .15s;
+}
+.cell-box-accordion-btn:hover { border-color: var(--color-primary); }
+.cell-box-accordion-open { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface)); }
+.cell-box-accordion-arrow { font-size: var(--text-sm); color: var(--color-text-muted); }
 
 /* Admin status modal with visual date picker */
 .modal-card-admin-status { width: min(560px, 100%); }
