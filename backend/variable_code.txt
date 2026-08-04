@@ -1,0 +1,31 @@
+PGHOST=postgres.railway.internal
+PGPORT=5432
+PGDATABASE=railway
+PGUSER=postgres
+PGPASSWORD=FUDwjyoIWepFOkQxlZeVMFdtdHZkNBmn
+
+
+RAILWAY_TCP_PROXY_DOMAIN    shinkansen.proxy.rlwy.net
+
+RAILWAY_TCP_PROXY_PORT     29064
+
+
+
+#занесение в бд:
+
+psql -h shinkansen.proxy.rlwy.net -p 29064 -U postgres -d railway
+
+
+
+#запуск фронтенда и бекенда:
+
+cd frontend
+npm run dev
+
+cd backend
+venv\Scripts\activate.bat #илибезбад
+uvicorn main:app --reload
+
+
+
+

@@ -9,6 +9,8 @@ python-multipart
 strenum
 authlib
 httpx
-dotenv
+python-dotenv
 alembic
-psycopg2
+psycopg2-binary
+openpyxl
+python-docx

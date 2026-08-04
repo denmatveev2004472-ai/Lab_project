@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Atlas</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=general-sans@500,600,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none">
+            <rect x="10" y="8" width="28" height="8" rx="4" />
+            <path d="M18 16v10.5c0 2 1.5 4.3 3.7 5.8l2.8 1.9c1 .7 1.9.7 2.9 0l2.8-1.9c2.2-1.5 3.8-3.8 3.8-5.8V16" />
+            <path d="M18 25h16" />
+          </svg>
+        </div>
+        <div>
+          <h1>Lab Atlas</h1>
+          <p>Инвентарь лаборатории</p>
+        </div>
+      </div>
+
+      <button class="theme-toggle" data-theme-toggle aria-label="Переключить тему">◐</button>
+
+      <div class="nav-group">
+        <div class="group-title">Типы</div>
+        <div class="pill-grid" id="typeFilters"></div>
+      </div>
+
+      <div class="nav-group">
+        <div class="group-title">Комнаты</div>
+        <div class="pill-grid" id="roomFilters"></div>
+      </div>
+
+      <div class="nav-group soft-card source-card">
+        <div class="group-title">Источники</div>
+        <div id="sourceStats" class="source-list"></div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Top-tier lab inventory</div>
+          <h2>Поиск по реактивам, оборудованию и складу</h2>
+        </div>
+        <div class="top-actions">
+          <button id="refreshBtn" class="btn ghost">Обновить</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="hero-grid">
+          <div class="hero-panel glass-card">
+            <div class="search-wrap">
+              <input id="searchInput" type="search" placeholder="Поиск по названию, CAS, формуле, инвентарному номеру, артикулу…" />
+              <button id="clearBtn" class="btn subtle">Сброс</button>
+            </div>
+            <div class="microcopy">Ищи по реактивам, расходникам, мебели, приборам, морозилкам и остаткам на складе.</div>
+          </div>
+          <div class="stats-grid" id="statCards"></div>
+        </section>
+
+        <section class="table-card">
+          <div class="table-toolbar">
+            <div>
+              <div class="section-title">Каталог</div>
+              <div id="resultMeta" class="section-subtitle">Загрузка…</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Тип</th>
+                  <th>Код / №</th>
+                  <th>Название</th>
+                  <th>Формула / CAS</th>
+                  <th>Место</th>
+                  <th>Детали</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>

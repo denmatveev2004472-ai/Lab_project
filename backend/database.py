@@ -3,18 +3,25 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
-PGHOST     = os.environ.get("PGHOST", "localhost")
-PGPORT     = os.environ.get("PGPORT", "5432")
-PGDATABASE = os.environ.get("PGDATABASE", "lab_chemicals")
-PGUSER     = os.environ.get("PGUSER", "postgres")
-PGPASSWORD = os.environ.get("PGPASSWORD", "")
 
-DATABASE_URL = (
-    f"postgresql+psycopg2://postgres:FUDwjyoIWepFOkQxlZeVMFdtdHZkNBmn"
-    f"@shinkansen.proxy.rlwy.net:29064/railway"
-)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if not DATABASE_URL:
+    PGHOST     = os.environ.get("PGHOST", "localhost")
+    PGPORT     = os.environ.get("PGPORT", "5432")
+    PGDATABASE = os.environ.get("PGDATABASE", "lab_chemicals")
+    PGUSER     = os.environ.get("PGUSER", "postgres")
+    PGPASSWORD = os.environ.get("PGPASSWORD", "")
+    DATABASE_URL = (
+        f"postgresql+psycopg2://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
+    )
+
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+
 
 engine = create_engine(
     DATABASE_URL,
@@ -23,6 +30,7 @@ engine = create_engine(
     max_overflow=20,
     echo=False,           # поставь True для отладки SQL-запросов
 )
+
 
 SessionLocal = sessionmaker(
     autocommit=False,

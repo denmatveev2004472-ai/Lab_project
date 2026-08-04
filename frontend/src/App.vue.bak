@@ -1,4 +1,4 @@
-<!-- App.vue — Лаборатория нано- и микрокапсулирования -->
+﻿<!-- App.vue — Лаборатория нано- и микрокапсулирования -->
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 
