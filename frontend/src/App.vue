@@ -2708,6 +2708,47 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
       <button type="button" class="btn" @click="showWeekCalendarModal = false">Закрыть</button>
     </div>
   </div>
+  <div v-if="showWeekCalendarModal" class="modal-overlay" @click.self="showWeekCalendarModal = false">
+    <div class="modal-box week-calendar-modal">
+      <div class="week-calendar-header">
+        <div class="week-calendar-nav">
+          <button type="button" class="icon-btn" @click="calendarPrevYear">«</button>
+          <button type="button" class="icon-btn" @click="calendarPrevMonth">‹</button>
+        </div>
+
+        <div class="week-calendar-title">
+          {{ weekCalendarViewDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }) }}
+        </div>
+
+        <div class="week-calendar-nav">
+          <button type="button" class="icon-btn" @click="calendarNextMonth">›</button>
+          <button type="button" class="icon-btn" @click="calendarNextYear">»</button>
+        </div>
+      </div>
+
+      <div class="week-calendar-grid">
+        <div v-for="dn in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="dn" class="week-calendar-dayname">
+          {{ dn }}
+        </div>
+
+        <button
+          v-for="(day, i) in calendarMonthDays()"
+          :key="i"
+          type="button"
+          class="week-calendar-day"
+          :class="{
+            'other-month': day.getMonth() !== weekCalendarViewDate.getMonth(),
+            'is-today': toDateStr(day) === toDateStr(new Date())
+          }"
+          @click="selectCalendarDay(day)"
+        >
+          {{ day.getDate() }}
+        </button>
+      </div>
+
+      <button type="button" class="btn" @click="showWeekCalendarModal = false">Закрыть</button>
+    </div>
+  </div>
 </template>
 
 <style>
