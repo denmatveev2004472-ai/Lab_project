@@ -771,6 +771,14 @@ async function submitAddForm() {
   } catch (e) { addError.value = `${t('saveErrorPrefix')}: ${String(e.message || e)}` }
   finally { addSaving.value = false }
 }
+async function toggleStock(row) {
+  try {
+    const r = await fetch(`${API_BASE}/api/item/${row.id}/toggle-stock`, { method: 'PATCH' })
+    if (!r.ok) throw new Error(await r.text())
+    await loadItems()
+  } catch (e) { alert('Ошибка: ' + (e.message || e)) }
+}
+
 async function deleteItem(row) {
   if (!isAdmin.value) { openLoginModal(() => deleteItem(row)); return }
   if (!confirm(`Удалить позицию "${row.name || row.name_ru || row.name_en || ''}"?`)) return
@@ -2024,6 +2032,12 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                     <td>
                       <div class="row-actions">
                         <button class="icon-btn" :title="t('edit')" @click="openEditModal(row)">✏️</button>
+                        <button class="icon-btn stock-plus" title="Пополнить" @click="toggleStock(row)">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#16a34a" fill="#dcfce7"/><rect x="7" y="3.5" width="2" height="9" rx="1" fill="#16a34a"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#16a34a"/></svg>
+                        </button>
+                        <button class="icon-btn stock-minus" :title="row.is_out_of_stock ? 'Вернуть в наличие' : 'Списать / нет в наличии'" @click="toggleStock(row)">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#dc2626" fill="#fee2e2"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#dc2626"/></svg>
+                        </button>
                         <button v-if="isAdmin" class="icon-btn" :title="t('remove')" @click="deleteItem(row)">🗑️</button>
                       </div>
                     </td>
@@ -2889,6 +2903,10 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .repeat-last-line { display: grid; gap: .6rem; }
 .repeat-last-buttons { display: flex; gap: .5rem; flex-wrap: wrap; }
 .repeat-btn { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.stock-plus, .stock-minus { padding: 2px; display: inline-flex; align-items: center; justify-content: center; }
+.stock-plus:hover svg circle { fill: #bbf7d0; }
+.stock-minus:hover svg circle { fill: #fecaca; }
+tr:has(.stock-minus[title="Вернуть в наличие"]) { opacity: 0.6; }
 
 /* Mobile layouts */
 .mobile-catalog-view { display: grid; gap: var(--space-4); }
