@@ -1062,10 +1062,14 @@ function toLocalDateTimeStr(dateObj) {
 
 const startTimeLabel = computed(() => minutesToLabel(bookingForm.startMinutes))
 const endTimeLabel = computed(() => minutesToLabel(bookingForm.startMinutes + bookingForm.duration))
-const durationLabel = computed(() => {
-  const d = DURATIONS.find(x => x.val === bookingForm.duration)
-  return d ? t(d.key) : `${bookingForm.duration} мин`
-})
+function durationToLabel(minutes) {
+  const total = Number(minutes) || 0
+  const hours = Math.floor(total / 60)
+  const mins = total % 60
+  return `${hours}:${String(mins).padStart(2, '0')}`
+}
+
+const durationLabel = computed(() => durationToLabel(bookingForm.duration))
 const maxStartMinutes = computed(() => DAY_END - bookingForm.duration)
 
 const timelineFillStyle = computed(() => {
@@ -1818,7 +1822,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                   <div v-for="b in getBookingsForDay(selectedInstrId, toDateStr(day))" :key="b.id" class="booking-slot">
                     <div class="booking-slot-who">👤 {{ b.who }}</div>
                     <div class="booking-slot-exp">{{ b.experiment }}</div>
-                    <div class="booking-slot-dur muted">⏱ {{ DURATIONS.find(d=>d.val===b.duration)?.val || b.duration }} мин</div>
+                    <div class="booking-slot-dur muted">⏱ {{ durationToLabel(b.duration) }}</div>
                     <div v-if="b.comments" class="booking-slot-comment muted">💬 {{ b.comments }}</div>
                     <div class="booking-slot-actions">
                       <button class="icon-btn" :title="t('edit')" @click="openEditBookingModal(b)">✏️</button>
@@ -1840,7 +1844,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                 <div>
                   <div v-if="isDateUnavail(selectedInstrId, toDateStr(day))" class="booking-maint-notice">🔧 {{ t('bookingUnavailDay') }}</div>
                   <div v-for="b in getBookingsForDay(selectedInstrId, toDateStr(day))" :key="b.id" class="booking-slot booking-slot-mobile">
-                    <div class="booking-slot-who">👤 <strong>{{ b.who }}</strong> · ⏱ {{ b.duration }} мин</div>
+                    <div class="booking-slot-who">👤 <strong>{{ b.who }}</strong> · ⏱ {{ durationToLabel(b.duration) }}</div>
                     <div class="booking-slot-exp">{{ b.experiment }}</div>
                     <div v-if="b.comments" class="booking-slot-comment muted">💬 {{ b.comments }}</div>
                     <div class="booking-slot-actions">
@@ -1900,7 +1904,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                     <span>{{ formatDate(day) }}</span>
                   </div>
                   <div v-for="b in getCellBookingsForDay(box, toDateStr(day))" :key="b.id" class="booking-slot booking-slot-mobile">
-                    <div class="booking-slot-who">👤 <strong>{{ b.who }}</strong> · ⏱ {{ b.duration }} мин</div>
+                    <div class="booking-slot-who">👤 <strong>{{ b.who }}</strong> · ⏱ {{ durationToLabel(b.duration) }}</div>
                     <div class="booking-slot-exp">{{ b.experiment }}</div>
                   </div>
                   <div v-if="!getCellBookingsForDay(box, toDateStr(day)).length" class="muted booking-no-entries">{{ t('noBookings') }}</div>
@@ -2438,7 +2442,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
               <div class="time-slider-row">
                 <span class="time-slider-tag">{{ t('bookingDuration') }}</span>
                 <input type="range" class="time-range" min="30" max="720" step="30" v-model.number="cellBookingForm.duration" />
-                <span class="time-slider-value">{{ DURATIONS.find(d=>d.val===cellBookingForm.duration)?.val || cellBookingForm.duration }} мин</span>
+                <span class="time-slider-value">{{ durationToLabel(cellBookingForm.duration) }}</span>
               </div>
             </div>
           </div>
