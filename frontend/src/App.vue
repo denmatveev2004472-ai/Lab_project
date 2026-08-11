@@ -2683,7 +2683,7 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 }
 .stock-plus:hover svg circle { fill: #bbf7d0; }
 .stock-minus:hover svg circle { fill: #fecaca; }
-.row-actions-split { justify-content: space-between; gap: 1.1rem; }
+.row-actions-split { justify-content: flex-start; gap: 1.25rem; }
 .row-actions-left, .row-actions-right { display: flex; gap: .3rem; }
 .stock-plus, .stock-minus { padding: 2px; display: inline-flex; align-items: center; justify-content: center; }
 .stock-plus:hover svg circle { fill: #bbf7d0; }
