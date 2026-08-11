@@ -2380,7 +2380,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
               </div>
               <div class="time-slider-row">
                 <span class="time-slider-tag">{{ t('bookingDuration') }}</span>
-                <input type="range" class="time-range" min="30" max="240" step="30" v-model.number="bookingForm.duration" />
+                <input type="range" class="time-range" min="30" max="720" step="30" v-model.number="bookingForm.duration" />
                 <span class="time-slider-value">{{ durationLabel }}</span>
               </div>
               <div class="time-timeline">
@@ -2437,7 +2437,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
               </div>
               <div class="time-slider-row">
                 <span class="time-slider-tag">{{ t('bookingDuration') }}</span>
-                <input type="range" class="time-range" min="30" max="240" step="30" v-model.number="cellBookingForm.duration" />
+                <input type="range" class="time-range" min="30" max="720" step="30" v-model.number="cellBookingForm.duration" />
                 <span class="time-slider-value">{{ DURATIONS.find(d=>d.val===cellBookingForm.duration)?.val || cellBookingForm.duration }} мин</span>
               </div>
             </div>
