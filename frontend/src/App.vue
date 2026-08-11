@@ -1818,7 +1818,24 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
           </div>
 
-          <div class="desktop-filter-row" v-if="activeTab !== 'protocols' && activeTab !== 'booking' && activeTab !== 'experiments'">
+          <div class="desktop-filter-row" v-if="activeTab === 'equipment'">
+            <div class="toolbar-block filters-block equipment-protocols-block">
+              <div class="group-title">{{ t('selectInstrument') }}</div>
+              <div class="room-line">
+                <button
+                  v-for="instr in INSTRUMENTS"
+                  :key="instr.id"
+                  type="button"
+                  class="room-chip instr-chip"
+                  @click="openInstrInfoModal(instr.id)"
+                >
+                  {{ instr.icon }} {{ t(instr.labelKey) }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="desktop-filter-row" v-if="activeTab !== 'protocols' && activeTab !== 'booking' && activeTab !== 'experiments' && activeTab !== 'equipment'">
             <div class="toolbar-block filters-block">
               <div class="group-title">{{ t('room') }}</div>
               <div class="room-line">
