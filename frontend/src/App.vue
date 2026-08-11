@@ -1795,21 +1795,19 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                   <div v-if="isDateUnavail(selectedInstrId, toDateStr(day))" class="booking-day-maint-label">🔧 ТО</div>
                 </div>
                 <div class="booking-day-slots">
-                  <div v-if="!isDateUnavail(selectedInstrId, toDateStr(day))">
-                    <div v-for="b in getBookingsForDay(selectedInstrId, toDateStr(day))" :key="b.id" class="booking-slot">
-                      <div class="booking-slot-who">👤 {{ b.who }}</div>
-                      <div class="booking-slot-exp">{{ b.experiment }}</div>
-                      <div class="booking-slot-dur muted">⏱ {{ DURATIONS.find(d=>d.val===b.duration)?.val || b.duration }} мин</div>
-                      <div v-if="b.comments" class="booking-slot-comment muted">💬 {{ b.comments }}</div>
-                      <div class="booking-slot-actions">
-                        <button class="icon-btn" :title="t('edit')" @click="openEditBookingModal(b)">✏️</button>
-                        <button class="icon-btn" :title="t('bookingDelete')" @click="deleteBooking(b)">🗑️</button>
-                      </div>
+                  <div v-if="isDateUnavail(selectedInstrId, toDateStr(day))" class="booking-maint-notice">🔧 {{ t('bookingUnavailDay') }}</div>
+                  <div v-for="b in getBookingsForDay(selectedInstrId, toDateStr(day))" :key="b.id" class="booking-slot">
+                    <div class="booking-slot-who">👤 {{ b.who }}</div>
+                    <div class="booking-slot-exp">{{ b.experiment }}</div>
+                    <div class="booking-slot-dur muted">⏱ {{ DURATIONS.find(d=>d.val===b.duration)?.val || b.duration }} мин</div>
+                    <div v-if="b.comments" class="booking-slot-comment muted">💬 {{ b.comments }}</div>
+                    <div class="booking-slot-actions">
+                      <button class="icon-btn" :title="t('edit')" @click="openEditBookingModal(b)">✏️</button>
+                      <button class="icon-btn" :title="t('bookingDelete')" @click="deleteBooking(b)">🗑️</button>
                     </div>
-                    <div v-if="!getBookingsForDay(selectedInstrId, toDateStr(day)).length" class="booking-empty-day">—</div>
-                    <button class="booking-add-btn" @click="openBookingModal(selectedInstrId, toDateStr(day))">+ {{ t('bookSlot') }}</button>
                   </div>
-                  <div v-else class="booking-maint-day">🔧 {{ t('bookingUnavailDay') }}</div>
+                  <div v-if="!getBookingsForDay(selectedInstrId, toDateStr(day)).length" class="booking-empty-day">—</div>
+                  <button class="booking-add-btn" @click="openBookingModal(selectedInstrId, toDateStr(day))">+ {{ t('bookSlot') }}</button>
                 </div>
               </div>
             </div>
@@ -1820,7 +1818,8 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                   <span>{{ formatDate(day) }}</span>
                   <span v-if="isDateUnavail(selectedInstrId, toDateStr(day))" class="muted">🔧 ТО</span>
                 </div>
-                <div v-if="!isDateUnavail(selectedInstrId, toDateStr(day))">
+                <div>
+                  <div v-if="isDateUnavail(selectedInstrId, toDateStr(day))" class="booking-maint-notice">🔧 {{ t('bookingUnavailDay') }}</div>
                   <div v-for="b in getBookingsForDay(selectedInstrId, toDateStr(day))" :key="b.id" class="booking-slot booking-slot-mobile">
                     <div class="booking-slot-who">👤 <strong>{{ b.who }}</strong> · ⏱ {{ b.duration }} мин</div>
                     <div class="booking-slot-exp">{{ b.experiment }}</div>
@@ -1833,7 +1832,6 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                   <div v-if="!getBookingsForDay(selectedInstrId, toDateStr(day)).length" class="muted booking-no-entries">{{ t('noBookings') }}</div>
                   <button class="booking-add-btn-mobile" @click="openBookingModal(selectedInstrId, toDateStr(day))">+ {{ t('bookSlot') }}</button>
                 </div>
-                <div v-else class="booking-maint-day muted">🔧 {{ t('bookingUnavailDay') }}</div>
               </div>
             </div>
 
@@ -2780,6 +2778,7 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 }
 .booking-add-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .booking-maint-day { background: color-mix(in srgb, var(--color-error) 6%, var(--color-surface)); border: 1px solid color-mix(in srgb, var(--color-error) 30%, var(--color-border)); border-radius: var(--radius-md); padding: var(--space-3); font-size: var(--text-xs); color: var(--color-error); text-align: center; }
+.booking-maint-notice { background: color-mix(in srgb, var(--color-error) 6%, var(--color-surface)); border: 1px solid color-mix(in srgb, var(--color-error) 30%, var(--color-border)); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); font-size: var(--text-xs); color: var(--color-error); text-align: center; margin-bottom: var(--space-2); }
 .booking-mobile-list { display: grid; gap: var(--space-3); }
 .booking-mobile-day { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; }
 .booking-mobile-day-header { padding: var(--space-3) var(--space-4); font-weight: 700; font-size: var(--text-sm); background: var(--color-surface-2); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; }
