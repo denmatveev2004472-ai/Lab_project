@@ -1087,6 +1087,16 @@ function selectCalendarDay(day) {
   showWeekCalendarModal.value = false
 }
 
+function isSelectedWeek(day) {
+  const offset = weekCalendarTarget.value === 'instrument' ? bookingWeekOffset.value : cellBookingWeekOffset.value
+  const weekDates = getWeekDates(offset)
+  return weekDates.some(d => toDateStr(d) === toDateStr(day))
+}
+
+function calendarToday() {
+  weekCalendarViewDate.value = new Date()
+}
+
 const showBookingModal = ref(false)
 const showInstrInfoModal = ref(false)
 const showAdminStatusModal = ref(false)
@@ -1903,9 +1913,10 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div class="week-toggle-row">
+              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('instrument')">📅</button>
               <button class="week-tab" :class="{ active: bookingWeekOffset === 0 }" @click="bookingWeekOffset = 0; loadAllBookings()">{{ t('thisWeek') }}</button>
               <button class="week-tab" :class="{ active: bookingWeekOffset === 1 }" @click="bookingWeekOffset = 1; loadAllBookings()">{{ t('nextWeek') }}</button>
-              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('instrument')">📅 {{ currentWeekLabel }}</button>
+              <span class="week-current-label">{{ currentWeekLabel }}</span>
             </div>
 
             <div v-if="bookingError && !showBookingModal" class="booking-inline-error">⚠️ {{ bookingError }}</div>
@@ -1967,9 +1978,10 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div class="week-toggle-row">
+              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('cell')">📅</button>
               <button class="week-tab" :class="{ active: cellBookingWeekOffset === 0 }" @click="cellBookingWeekOffset = 0; loadCellBookings()">{{ t('thisWeek') }}</button>
               <button class="week-tab" :class="{ active: cellBookingWeekOffset === 1 }" @click="cellBookingWeekOffset = 1; loadCellBookings()">{{ t('nextWeek') }}</button>
-              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('cell')">📅 {{ cellWeekLabel }}</button>
+              <span class="week-current-label">{{ cellWeekLabel }}</span>
             </div>
 
             <div v-for="box in [1,2]" :key="box" class="cell-box-section">
@@ -2670,26 +2682,20 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
   <div v-if="showWeekCalendarModal" class="modal-overlay" @click.self="showWeekCalendarModal = false">
     <div class="modal-box week-calendar-modal">
       <div class="week-calendar-header">
-        <div class="week-calendar-nav">
-          <button type="button" class="icon-btn" @click="calendarPrevYear">«</button>
-          <button type="button" class="icon-btn" @click="calendarPrevMonth">‹</button>
-        </div>
-
+        <button type="button" class="week-calendar-nav-btn" @click="calendarPrevMonth">‹</button>
         <div class="week-calendar-title">
           {{ weekCalendarViewDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }) }}
         </div>
+        <button type="button" class="week-calendar-nav-btn" @click="calendarNextMonth">›</button>
+      </div>
 
-        <div class="week-calendar-nav">
-          <button type="button" class="icon-btn" @click="calendarNextMonth">›</button>
-          <button type="button" class="icon-btn" @click="calendarNextYear">»</button>
+      <div class="week-calendar-weekdays">
+        <div v-for="dn in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="dn" class="week-calendar-weekday">
+          {{ dn }}
         </div>
       </div>
 
-      <div class="week-calendar-grid">
-        <div v-for="dn in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="dn" class="week-calendar-dayname">
-          {{ dn }}
-        </div>
-
+      <div class="week-calendar-days">
         <button
           v-for="(day, i) in calendarMonthDays()"
           :key="i"
@@ -2697,7 +2703,8 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
           class="week-calendar-day"
           :class="{
             'other-month': day.getMonth() !== weekCalendarViewDate.getMonth(),
-            'is-today': toDateStr(day) === toDateStr(new Date())
+            'is-today': toDateStr(day) === toDateStr(new Date()),
+            'is-selected': isSelectedWeek(day)
           }"
           @click="selectCalendarDay(day)"
         >
@@ -2705,32 +2712,29 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
         </button>
       </div>
 
-      <button type="button" class="btn" @click="showWeekCalendarModal = false">Закрыть</button>
+      <div class="week-calendar-footer">
+        <button type="button" class="btn btn-ghost" @click="calendarToday">Сегодня</button>
+        <button type="button" class="btn" @click="showWeekCalendarModal = false">Закрыть</button>
+      </div>
     </div>
   </div>
   <div v-if="showWeekCalendarModal" class="modal-overlay" @click.self="showWeekCalendarModal = false">
     <div class="modal-box week-calendar-modal">
       <div class="week-calendar-header">
-        <div class="week-calendar-nav">
-          <button type="button" class="icon-btn" @click="calendarPrevYear">«</button>
-          <button type="button" class="icon-btn" @click="calendarPrevMonth">‹</button>
-        </div>
-
+        <button type="button" class="week-calendar-nav-btn" @click="calendarPrevMonth">‹</button>
         <div class="week-calendar-title">
           {{ weekCalendarViewDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }) }}
         </div>
+        <button type="button" class="week-calendar-nav-btn" @click="calendarNextMonth">›</button>
+      </div>
 
-        <div class="week-calendar-nav">
-          <button type="button" class="icon-btn" @click="calendarNextMonth">›</button>
-          <button type="button" class="icon-btn" @click="calendarNextYear">»</button>
+      <div class="week-calendar-weekdays">
+        <div v-for="dn in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="dn" class="week-calendar-weekday">
+          {{ dn }}
         </div>
       </div>
 
-      <div class="week-calendar-grid">
-        <div v-for="dn in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="dn" class="week-calendar-dayname">
-          {{ dn }}
-        </div>
-
+      <div class="week-calendar-days">
         <button
           v-for="(day, i) in calendarMonthDays()"
           :key="i"
@@ -2738,7 +2742,8 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
           class="week-calendar-day"
           :class="{
             'other-month': day.getMonth() !== weekCalendarViewDate.getMonth(),
-            'is-today': toDateStr(day) === toDateStr(new Date())
+            'is-today': toDateStr(day) === toDateStr(new Date()),
+            'is-selected': isSelectedWeek(day)
           }"
           @click="selectCalendarDay(day)"
         >
@@ -2746,7 +2751,10 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
         </button>
       </div>
 
-      <button type="button" class="btn" @click="showWeekCalendarModal = false">Закрыть</button>
+      <div class="week-calendar-footer">
+        <button type="button" class="btn btn-ghost" @click="calendarToday">Сегодня</button>
+        <button type="button" class="btn" @click="showWeekCalendarModal = false">Закрыть</button>
+      </div>
     </div>
   </div>
 </template>
@@ -2951,18 +2959,26 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .booking-instr-title { display: flex; align-items: center; gap: var(--space-3); }
 .booking-instr-icon { font-size: 2rem; }
 .booking-header-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
-.week-toggle-row { display: flex; gap: .5rem; flex-wrap: wrap; }
-.week-tab-calendar { margin-left: auto; }
-.week-calendar-modal { max-width: 360px; width: 100%; }
+.week-toggle-row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.week-tab-calendar { padding: .4rem .6rem; }
+.week-current-label { font-size: var(--text-sm); color: var(--color-text-muted); margin-left: auto; }
+
+.week-calendar-modal { max-width: 320px; width: 100%; padding: var(--space-4); }
 .week-calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); }
-.week-calendar-nav { display: flex; gap: .2rem; }
-.week-calendar-title { font-weight: 600; text-transform: capitalize; }
-.week-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: var(--space-3); }
-.week-calendar-dayname { text-align: center; font-size: var(--text-xs); color: var(--color-text-muted); padding: 4px 0; }
-.week-calendar-day { background: none; border: 1px solid transparent; border-radius: var(--radius-sm); padding: 6px 0; cursor: pointer; font-size: var(--text-sm); }
+.week-calendar-nav-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-primary); padding: .2rem .5rem; }
+.week-calendar-title { font-weight: 600; font-size: var(--text-base); text-transform: capitalize; }
+
+.week-calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+.week-calendar-weekday { text-align: center; font-size: var(--text-xs); color: var(--color-text-muted); padding: 4px 0; font-weight: 500; }
+
+.week-calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.week-calendar-day { background: none; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: var(--text-sm); display: flex; align-items: center; justify-content: center; }
 .week-calendar-day:hover { background: var(--color-accent); }
-.week-calendar-day.other-month { color: var(--color-text-muted); opacity: .5; }
-.week-calendar-day.is-today { border-color: var(--color-primary); font-weight: 600; }
+.week-calendar-day.other-month { color: var(--color-text-muted); opacity: .4; }
+.week-calendar-day.is-today { background: var(--color-primary); color: #fff; font-weight: 600; }
+.week-calendar-day.is-selected { background: var(--color-accent); font-weight: 600; }
+
+.week-calendar-footer { display: flex; justify-content: space-between; margin-top: var(--space-3); }
 .week-tab { border: 1px solid var(--color-border); background: var(--color-surface-2); color: var(--color-text); border-radius: 999px; padding: .65rem 1.2rem; font-size: var(--text-sm); }
 .week-tab.active { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border-color: transparent; }
 .booking-inline-error { background: color-mix(in srgb, var(--color-error) 10%, var(--color-surface)); border: 1px solid var(--color-error); color: var(--color-error); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); }
