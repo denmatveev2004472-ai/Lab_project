@@ -778,6 +778,10 @@ function toggleNameExpand(id) {
   else next.add(id)
   expandedNames.value = next
 }
+function isLongName(row) {
+  const name = row.name || row.name_ru || row.name_en || ''
+  return name.length > 28
+}
 async function changeQuantity(row, delta) {
   const current = parseFloat(row.quantity) || 0
   const next = Math.max(0, current + delta)
@@ -2974,9 +2978,9 @@ tr:has(.stock-minus[title="Вернуть в наличие"]) { opacity: 0.6; }
 .mobile-item-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); background: var(--color-surface-2); width: 100%; }
 .mobile-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); }
 .mobile-item-name { font-size: var(--text-base); overflow-wrap: break-word; word-break: break-word; }
-.name-cell { display: flex; align-items: flex-start; gap: .4rem; }
+.name-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
 .name-truncate { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-.name-toggle-btn { flex-shrink: 0; background: none; border: none; cursor: pointer; color: var(--color-text-muted); font-size: var(--text-xs); padding: 2px 4px; }
+.name-toggle-btn { background: none; border: none; cursor: pointer; color: var(--color-text-muted); font-size: var(--text-xs); padding: 0; margin-top: 2px; line-height: 1; }
 .name-toggle-btn:hover { color: var(--color-primary); }
 .mobile-item-row { font-size: var(--text-sm); padding: .25rem 0; border-top: 1px dashed var(--color-border); overflow-wrap: anywhere; white-space: pre-wrap; }
 .mobile-item-row:first-of-type { border-top: none; }
