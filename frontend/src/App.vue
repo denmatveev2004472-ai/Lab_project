@@ -2236,8 +2236,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                 <div v-for="row in items" :key="row.id" class="mobile-item-card">
                   <div class="mobile-item-top">
                     <div class="name-cell">
-  <strong class="mobile-item-name" :class="{ 'name-truncate': !expandedNames.has(row.id) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
-  <button type="button" class="name-toggle-btn" @click.prevent="toggleNameExpand(row.id)">{{ expandedNames.has(row.id) ? '▲' : '▼' }}</button>
+  <strong class="mobile-item-name">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
 </div>
                     <div class="row-actions row-actions-split">
                       <div class="row-actions-left">
