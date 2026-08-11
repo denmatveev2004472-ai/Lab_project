@@ -1807,6 +1807,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
           <!-- ═══ BOOKING SECTION ═══ -->
           <section v-if="activeTab === 'booking'" class="booking-section">
 
+            <template v-if="selectedBookingRoom === 'instruments'">
             <div v-if="selectedInstr && getInstrStatus(selectedInstr.id).status !== 'ok'" class="maint-alert-banner">
               ⛔ {{ selectedInstr.icon }} <strong>{{ t(selectedInstr.labelKey) }}</strong> {{ t('bookingMaintAlert') }}.
               <span v-if="getInstrStatus(selectedInstr.id).reason" class="maint-reason">{{ getInstrStatus(selectedInstr.id).reason }}</span>
@@ -1880,6 +1881,9 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
               </div>
             </div>
 
+            </template>
+
+            <template v-if="selectedBookingRoom === 'cell'">
             <!-- ═══ CELL CULTURE ═══ -->
             <div class="cell-culture-divider">
               <div class="cell-culture-title">🧫 {{ t('cellCulture') }}</div>
@@ -1934,6 +1938,7 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                 </div>
               </div>
             </div>
+            </template>
           </section>
 
           <!-- ═══ EXPERIMENTS SECTION ═══ -->
