@@ -1013,6 +1013,17 @@ function loadBookingData() {
 }
 
 const selectedInstrId = ref(INSTRUMENTS[0].id)
+const selectedBookingRoom = ref('instruments')
+
+function selectInstrument(instrId) {
+  selectedBookingRoom.value = 'instruments'
+  selectedInstrId.value = instrId
+}
+function selectCellCultureRoom() {
+  selectedBookingRoom.value = 'cell'
+  loadCellBookings()
+}
+
 const bookingWeek = ref('this')
 const showBookingModal = ref(false)
 const showInstrInfoModal = ref(false)
@@ -1741,20 +1752,31 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
           </div>
 
           <div class="desktop-filter-row" v-if="activeTab === 'booking'">
-            <div class="toolbar-block filters-block">
+            <div class="toolbar-block filters-block booking-selector-block">
               <div class="group-title">{{ t('selectInstrument') }}</div>
               <div class="room-line">
                 <button
                   v-for="instr in INSTRUMENTS" :key="instr.id"
                   class="room-chip instr-chip"
                   :class="{
-                    active: selectedInstrId === instr.id,
+                    active: selectedBookingRoom === 'instruments' && selectedInstrId === instr.id,
                     'instr-maint': getInstrStatus(instr.id).status !== 'ok'
                   }"
-                  @click="selectedInstrId = instr.id"
+                  @click="selectInstrument(instr.id)"
                 >
                   {{ instr.icon }} {{ t(instr.labelKey) }}
                   <span v-if="getInstrStatus(instr.id).status !== 'ok'" class="instr-maint-dot" title="Техобслуживание">⚠️</span>
+                </button>
+              </div>
+
+              <div class="group-title booking-room-title">{{ t('selectRoom') }}</div>
+              <div class="room-line">
+                <button
+                  class="room-chip cell-culture-room-chip"
+                  :class="{ active: selectedBookingRoom === 'cell' }"
+                  @click="selectCellCultureRoom"
+                >
+                  🧫 {{ t('cellCulture') }}
                 </button>
               </div>
             </div>
