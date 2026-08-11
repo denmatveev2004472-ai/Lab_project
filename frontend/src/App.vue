@@ -2036,10 +2036,10 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                     <td>
                       <div class="row-actions row-actions-split">
                         <div class="row-actions-left">
-                          <button class="icon-btn stock-plus" title="Увеличить количество" @click="changeQuantity(row, 1)">
+                          <button type="button" class="icon-btn stock-plus" title="Увеличить количество" @click.prevent="changeQuantity(row, 1)">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#16a34a" fill="#dcfce7"/><rect x="7" y="3.5" width="2" height="9" rx="1" fill="#16a34a"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#16a34a"/></svg>
                           </button>
-                          <button class="icon-btn stock-minus" title="Уменьшить количество" @click="changeQuantity(row, -1)">
+                          <button type="button" class="icon-btn stock-minus" title="Уменьшить количество" @click.prevent="changeQuantity(row, -1)">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#dc2626" fill="#fee2e2"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#dc2626"/></svg>
                           </button>
                         </div>
@@ -2073,10 +2073,10 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                     <strong class="mobile-item-name">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
                     <div class="row-actions row-actions-split">
                       <div class="row-actions-left">
-                        <button class="icon-btn stock-plus" title="Увеличить количество" @click="changeQuantity(row, 1)">
+                        <button type="button" class="icon-btn stock-plus" title="Увеличить количество" @click.prevent="changeQuantity(row, 1)">
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#16a34a" fill="#dcfce7"/><rect x="7" y="3.5" width="2" height="9" rx="1" fill="#16a34a"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#16a34a"/></svg>
                         </button>
-                        <button class="icon-btn stock-minus" title="Уменьшить количество" @click="changeQuantity(row, -1)">
+                        <button type="button" class="icon-btn stock-minus" title="Уменьшить количество" @click.prevent="changeQuantity(row, -1)">
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#dc2626" fill="#fee2e2"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#dc2626"/></svg>
                         </button>
                       </div>
