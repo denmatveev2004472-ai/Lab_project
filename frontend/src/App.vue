@@ -2662,6 +2662,27 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .icon-btn { border: 1px solid var(--color-border); background: var(--color-surface-2); border-radius: 999px; width: 34px; height: 34px; display: grid; place-items: center; font-size: .95rem; flex-shrink: 0; }
 .icon-btn:hover { background: var(--color-accent); }
 .row-actions { display: flex; gap: .3rem; }
+.row-actions-split {
+  width: 100%;
+  min-width: 158px;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.row-actions-left,
+.row-actions-right {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.stock-plus,
+.stock-minus {
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.stock-plus:hover svg circle { fill: #bbf7d0; }
+.stock-minus:hover svg circle { fill: #fecaca; }
 .row-actions-split { justify-content: space-between; gap: 1.1rem; }
 .row-actions-left, .row-actions-right { display: flex; gap: .3rem; }
 .stock-plus, .stock-minus { padding: 2px; display: inline-flex; align-items: center; justify-content: center; }
