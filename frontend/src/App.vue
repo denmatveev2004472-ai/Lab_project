@@ -782,6 +782,13 @@ function isLongName(row) {
   const name = row.name || row.name_ru || row.name_en || ''
   return name.length > 28
 }
+function stockLevel(row) {
+  const q = parseFloat(row.quantity)
+  if (!Number.isFinite(q)) return 'normal'
+  if (q <= 0) return 'empty'
+  if (q <= 2) return 'low'
+  return 'normal'
+}
 async function changeQuantity(row, delta) {
   const current = parseFloat(row.quantity) || 0
   const next = Math.max(0, current + delta)
@@ -2036,7 +2043,11 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                     <td class="mono">{{ row.code || row.inventory_number || '—' }}</td>
                     <td>
   <div class="name-cell">
-    <strong :class="{ 'name-truncate': !expandedNames.has(row.id) && isLongName(row) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
+    <div class="name-line">
+      <strong :class="{ 'name-truncate': !expandedNames.has(row.id) && isLongName(row) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
+      <span v-if="stockLevel(row) === 'low'" class="stock-badge stock-badge-low" title="Заканчивается">⚠️</span>
+      <span v-if="stockLevel(row) === 'empty'" class="stock-badge stock-badge-empty" title="Закончилось">⛔</span>
+    </div>
     <button v-if="isLongName(row)" type="button" class="name-toggle-btn" @click.prevent="toggleNameExpand(row.id)">{{ expandedNames.has(row.id) ? '▲' : '▼' }}</button>
   </div>
 </td>
@@ -2979,6 +2990,12 @@ tr:has(.stock-minus[title="Вернуть в наличие"]) { opacity: 0.6; }
 .mobile-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); }
 .mobile-item-name { font-size: var(--text-base); overflow-wrap: break-word; word-break: break-word; }
 .name-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.name-line { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.stock-badge { font-size: var(--text-xs); padding: 1px 6px; border-radius: 999px; flex-shrink: 0; }
+.stock-badge-low { background: #fef3c7; color: #92400e; }
+.stock-badge-empty { background: #fee2e2; color: #991b1b; }
+[data-theme="dark"] .stock-badge-low { background: #451a03; color: #fbbf24; }
+[data-theme="dark"] .stock-badge-empty { background: #450a0a; color: #f87171; }
 .name-truncate { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
 .name-toggle-btn { background: none; border: none; cursor: pointer; color: var(--color-text-muted); font-size: var(--text-xs); padding: 0; margin-top: 2px; line-height: 1; }
 .name-toggle-btn:hover { color: var(--color-primary); }
