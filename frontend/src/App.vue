@@ -771,6 +771,13 @@ async function submitAddForm() {
   } catch (e) { addError.value = `${t('saveErrorPrefix')}: ${String(e.message || e)}` }
   finally { addSaving.value = false }
 }
+const expandedNames = ref(new Set())
+function toggleNameExpand(id) {
+  const next = new Set(expandedNames.value)
+  if (next.has(id)) next.delete(id)
+  else next.add(id)
+  expandedNames.value = next
+}
 async function changeQuantity(row, delta) {
   const current = parseFloat(row.quantity) || 0
   const next = Math.max(0, current + delta)
@@ -2023,7 +2030,12 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                 <tbody>
                   <tr v-for="row in items" :key="row.id">
                     <td class="mono">{{ row.code || row.inventory_number || '—' }}</td>
-                    <td><strong>{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong></td>
+                    <td>
+  <div class="name-cell">
+    <strong :class="{ 'name-truncate': !expandedNames.has(row.id) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
+    <button type="button" class="name-toggle-btn" @click.prevent="toggleNameExpand(row.id)">{{ expandedNames.has(row.id) ? '▲' : '▼' }}</button>
+  </div>
+</td>
                     <td v-if="activeTab === 'reagent'">
                       <div>{{ row.formula || '—' }}</div><div class="muted">{{ row.cas || '' }}</div>
                     </td>
@@ -2071,7 +2083,10 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
               <div class="mobile-item-list">
                 <div v-for="row in items" :key="row.id" class="mobile-item-card">
                   <div class="mobile-item-top">
-                    <strong class="mobile-item-name">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
+                    <div class="name-cell">
+  <strong class="mobile-item-name" :class="{ 'name-truncate': !expandedNames.has(row.id) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
+  <button type="button" class="name-toggle-btn" @click.prevent="toggleNameExpand(row.id)">{{ expandedNames.has(row.id) ? '▲' : '▼' }}</button>
+</div>
                     <div class="row-actions row-actions-split">
                       <div class="row-actions-left">
                         <button type="button" class="icon-btn stock-plus" title="Увеличить количество" @click.prevent="changeQuantity(row, 1)">
@@ -2959,6 +2974,10 @@ tr:has(.stock-minus[title="Вернуть в наличие"]) { opacity: 0.6; }
 .mobile-item-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); background: var(--color-surface-2); width: 100%; }
 .mobile-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); }
 .mobile-item-name { font-size: var(--text-base); overflow-wrap: break-word; word-break: break-word; }
+.name-cell { display: flex; align-items: flex-start; gap: .4rem; }
+.name-truncate { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.name-toggle-btn { flex-shrink: 0; background: none; border: none; cursor: pointer; color: var(--color-text-muted); font-size: var(--text-xs); padding: 2px 4px; }
+.name-toggle-btn:hover { color: var(--color-primary); }
 .mobile-item-row { font-size: var(--text-sm); padding: .25rem 0; border-top: 1px dashed var(--color-border); overflow-wrap: anywhere; white-space: pre-wrap; }
 .mobile-item-row:first-of-type { border-top: none; }
 .mobile-item-label { color: var(--color-text-muted); margin-right: .4rem; }
