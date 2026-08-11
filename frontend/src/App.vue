@@ -2963,16 +2963,23 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .week-tab-calendar { padding: .4rem .6rem; }
 .week-current-label { font-size: var(--text-sm); color: var(--color-text-muted); margin-left: auto; }
 
-.week-calendar-modal { max-width: 320px; width: 100%; padding: var(--space-4); }
+.week-calendar-modal {
+  max-width: 320px;
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
 .week-calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); }
 .week-calendar-nav-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-primary); padding: .2rem .5rem; }
-.week-calendar-title { font-weight: 600; font-size: var(--text-base); text-transform: capitalize; }
+.week-calendar-title { font-weight: 600; font-size: var(--text-base); text-transform: capitalize; color: var(--color-text); }
 
 .week-calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
 .week-calendar-weekday { text-align: center; font-size: var(--text-xs); color: var(--color-text-muted); padding: 4px 0; font-weight: 500; }
 
 .week-calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-.week-calendar-day { background: none; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: var(--text-sm); display: flex; align-items: center; justify-content: center; }
+.week-calendar-day { background: none; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: var(--text-sm); display: flex; align-items: center; justify-content: center; color: var(--color-text); }
 .week-calendar-day:hover { background: var(--color-accent); }
 .week-calendar-day.other-month { color: var(--color-text-muted); opacity: .4; }
 .week-calendar-day.is-today { background: var(--color-primary); color: #fff; font-weight: 600; }
