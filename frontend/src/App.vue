@@ -1027,6 +1027,66 @@ function selectCellCultureRoom() {
 }
 
 const bookingWeek = ref('this')
+const bookingWeekOffset = ref(0)
+const showWeekCalendarModal = ref(false)
+const weekCalendarTarget = ref('instrument')
+const weekCalendarViewDate = ref(new Date())
+
+function openWeekCalendar(target) {
+  weekCalendarTarget.value = target
+  weekCalendarViewDate.value = new Date()
+  showWeekCalendarModal.value = true
+}
+function calendarMonthDays() {
+  const view = weekCalendarViewDate.value
+  const year = view.getFullYear()
+  const month = view.getMonth()
+  const first = new Date(year, month, 1)
+  const startDay = first.getDay() === 0 ? 6 : first.getDay() - 1
+  const start = new Date(first)
+  start.setDate(first.getDate() - startDay)
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(start); d.setDate(start.getDate() + i)
+    return d
+  })
+}
+function calendarPrevMonth() {
+  const v = weekCalendarViewDate.value
+  weekCalendarViewDate.value = new Date(v.getFullYear(), v.getMonth() - 1, 1)
+}
+function calendarNextMonth() {
+  const v = weekCalendarViewDate.value
+  weekCalendarViewDate.value = new Date(v.getFullYear(), v.getMonth() + 1, 1)
+}
+function calendarPrevYear() {
+  const v = weekCalendarViewDate.value
+  weekCalendarViewDate.value = new Date(v.getFullYear() - 1, v.getMonth(), 1)
+}
+function calendarNextYear() {
+  const v = weekCalendarViewDate.value
+  weekCalendarViewDate.value = new Date(v.getFullYear() + 1, v.getMonth(), 1)
+}
+function weekOffsetForDate(picked) {
+  const now = new Date(); now.setHours(0,0,0,0)
+  const curDay = now.getDay() === 0 ? 6 : now.getDay() - 1
+  const curMonday = new Date(now); curMonday.setDate(now.getDate() - curDay)
+  const p = new Date(picked); p.setHours(0,0,0,0)
+  const pDay = p.getDay() === 0 ? 6 : p.getDay() - 1
+  const pMonday = new Date(p); pMonday.setDate(p.getDate() - pDay)
+  return Math.round((pMonday - curMonday) / (7 * 24 * 60 * 60 * 1000))
+}
+function selectCalendarDay(day) {
+  const offset = weekOffsetForDate(day)
+  if (weekCalendarTarget.value === 'instrument') {
+    bookingWeekOffset.value = offset
+    loadAllBookings()
+  } else {
+    cellBookingWeekOffset.value = offset
+    loadCellBookings()
+  }
+  showWeekCalendarModal.value = false
+}
+
 const showBookingModal = ref(false)
 const showInstrInfoModal = ref(false)
 const showAdminStatusModal = ref(false)
@@ -1147,7 +1207,13 @@ function getWeekDates(offset = 0) {
 
 const thisWeekDates = computed(() => getWeekDates(0))
 const nextWeekDates = computed(() => getWeekDates(1))
-const currentWeekDates = computed(() => bookingWeek.value === 'this' ? thisWeekDates.value : nextWeekDates.value)
+const currentWeekDates = computed(() => getWeekDates(bookingWeekOffset.value))
+const currentWeekLabel = computed(() => {
+  const d = currentWeekDates.value[0]
+  const d2 = currentWeekDates.value[6]
+  const opts = { day: 'numeric', month: 'short' }
+  return `${d.toLocaleDateString('ru-RU', opts)} – ${d2.toLocaleDateString('ru-RU', opts)}`
+})
 
 function formatDate(d) {
   return d.toLocaleDateString(language.value === 'ru' ? 'ru-RU' : 'en-GB', { weekday: 'short', day: '2-digit', month: '2-digit' })
@@ -1342,6 +1408,7 @@ const selectedInstrInfo = computed(() => INSTR_INFO[selectedInstrId.value] || {}
 // ─── CELL CULTURE MODULE ─────────────────────────────────────────────────────
 const cellBookings = ref([])
 const cellBookingWeek = ref('this')
+const cellBookingWeekOffset = ref(0)
 const showCellBookingModal = ref(false)
 const editingCellBookingId = ref(null)
 const cellBookingForm = reactive({
@@ -1506,7 +1573,13 @@ async function deleteCellBooking(b) {
   } catch (e) {}
 }
 
-const cellWeekDates = computed(() => cellBookingWeek.value === 'this' ? thisWeekDates.value : nextWeekDates.value)
+const cellWeekDates = computed(() => getWeekDates(cellBookingWeekOffset.value))
+const cellWeekLabel = computed(() => {
+  const d = cellWeekDates.value[0]
+  const d2 = cellWeekDates.value[6]
+  const opts = { day: 'numeric', month: 'short' }
+  return `${d.toLocaleDateString('ru-RU', opts)} – ${d2.toLocaleDateString('ru-RU', opts)}`
+})
 const expandedCellBox = ref(null)
 function toggleCellBox(box) {
   expandedCellBox.value = expandedCellBox.value === box ? null : box
@@ -1830,8 +1903,9 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div class="week-toggle-row">
-              <button class="week-tab" :class="{ active: bookingWeek === 'this' }" @click="bookingWeek = 'this'; loadAllBookings()">{{ t('thisWeek') }}</button>
-              <button class="week-tab" :class="{ active: bookingWeek === 'next' }" @click="bookingWeek = 'next'; loadAllBookings()">{{ t('nextWeek') }}</button>
+              <button class="week-tab" :class="{ active: bookingWeekOffset === 0 }" @click="bookingWeekOffset = 0; loadAllBookings()">{{ t('thisWeek') }}</button>
+              <button class="week-tab" :class="{ active: bookingWeekOffset === 1 }" @click="bookingWeekOffset = 1; loadAllBookings()">{{ t('nextWeek') }}</button>
+              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('instrument')">📅 {{ currentWeekLabel }}</button>
             </div>
 
             <div v-if="bookingError && !showBookingModal" class="booking-inline-error">⚠️ {{ bookingError }}</div>
@@ -1893,8 +1967,9 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div class="week-toggle-row">
-              <button class="week-tab" :class="{ active: cellBookingWeek === 'this' }" @click="cellBookingWeek = 'this'; loadCellBookings()">{{ t('thisWeek') }}</button>
-              <button class="week-tab" :class="{ active: cellBookingWeek === 'next' }" @click="cellBookingWeek = 'next'; loadCellBookings()">{{ t('nextWeek') }}</button>
+              <button class="week-tab" :class="{ active: cellBookingWeekOffset === 0 }" @click="cellBookingWeekOffset = 0; loadCellBookings()">{{ t('thisWeek') }}</button>
+              <button class="week-tab" :class="{ active: cellBookingWeekOffset === 1 }" @click="cellBookingWeekOffset = 1; loadCellBookings()">{{ t('nextWeek') }}</button>
+              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('cell')">📅 {{ cellWeekLabel }}</button>
             </div>
 
             <div v-for="box in [1,2]" :key="box" class="cell-box-section">
@@ -2794,7 +2869,18 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .booking-instr-title { display: flex; align-items: center; gap: var(--space-3); }
 .booking-instr-icon { font-size: 2rem; }
 .booking-header-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
-.week-toggle-row { display: flex; gap: .5rem; }
+.week-toggle-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+.week-tab-calendar { margin-left: auto; }
+.week-calendar-modal { max-width: 360px; width: 100%; }
+.week-calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); }
+.week-calendar-nav { display: flex; gap: .2rem; }
+.week-calendar-title { font-weight: 600; text-transform: capitalize; }
+.week-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: var(--space-3); }
+.week-calendar-dayname { text-align: center; font-size: var(--text-xs); color: var(--color-text-muted); padding: 4px 0; }
+.week-calendar-day { background: none; border: 1px solid transparent; border-radius: var(--radius-sm); padding: 6px 0; cursor: pointer; font-size: var(--text-sm); }
+.week-calendar-day:hover { background: var(--color-accent); }
+.week-calendar-day.other-month { color: var(--color-text-muted); opacity: .5; }
+.week-calendar-day.is-today { border-color: var(--color-primary); font-weight: 600; }
 .week-tab { border: 1px solid var(--color-border); background: var(--color-surface-2); color: var(--color-text); border-radius: 999px; padding: .65rem 1.2rem; font-size: var(--text-sm); }
 .week-tab.active { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border-color: transparent; }
 .booking-inline-error { background: color-mix(in srgb, var(--color-error) 10%, var(--color-surface)); border: 1px solid var(--color-error); color: var(--color-error); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); }
