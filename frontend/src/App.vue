@@ -779,7 +779,8 @@ async function changeQuantity(row, delta) {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ quantity: String(next) })
     })
-    await loadItems()
+    const idx = items.value.findIndex(i => i.id === row.id)
+    if (idx !== -1) items.value[idx] = { ...items.value[idx], quantity: String(next) }
   } catch (e) { alert('Ошибка: ' + (e.message || e)) }
 }
 
