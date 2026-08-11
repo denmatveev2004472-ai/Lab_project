@@ -1913,9 +1913,9 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div class="week-toggle-row">
-              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('instrument')">📅</button>
               <button class="week-tab" :class="{ active: bookingWeekOffset === 0 }" @click="bookingWeekOffset = 0; loadAllBookings()">{{ t('thisWeek') }}</button>
               <button class="week-tab" :class="{ active: bookingWeekOffset === 1 }" @click="bookingWeekOffset = 1; loadAllBookings()">{{ t('nextWeek') }}</button>
+              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('instrument')">📅</button>
               <span class="week-current-label">{{ currentWeekLabel }}</span>
             </div>
 
@@ -1978,9 +1978,9 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
             </div>
 
             <div class="week-toggle-row">
-              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('cell')">📅</button>
               <button class="week-tab" :class="{ active: cellBookingWeekOffset === 0 }" @click="cellBookingWeekOffset = 0; loadCellBookings()">{{ t('thisWeek') }}</button>
               <button class="week-tab" :class="{ active: cellBookingWeekOffset === 1 }" @click="cellBookingWeekOffset = 1; loadCellBookings()">{{ t('nextWeek') }}</button>
+              <button class="week-tab week-tab-calendar" @click="openWeekCalendar('cell')">📅</button>
               <span class="week-current-label">{{ cellWeekLabel }}</span>
             </div>
 
@@ -2913,9 +2913,9 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .icon-btn:hover { background: var(--color-accent); }
 .row-actions { display: flex; gap: .3rem; }
 .row-actions-split {
-  width: 100%;
   justify-content: flex-start;
   gap: 1.25rem;
+  margin-left: auto;
 }
 .row-actions-left,
 .row-actions-right {
@@ -3044,6 +3044,8 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 
 /* Cell culture */
 .cell-culture-divider { margin-top: var(--space-8); padding-top: var(--space-6); border-top: 2px solid var(--color-border); }
+.equipment-protocols-block .room-line { align-items: stretch; }
+.equipment-protocols-block .instr-chip { white-space: normal; text-align: left; }
 .cell-culture-title { font-family: var(--font-display); font-size: var(--text-lg); color: var(--color-primary); }
 .cell-box-section { margin-top: var(--space-4); }
 .cell-box-header { font-weight: 700; font-size: var(--text-sm); margin-bottom: var(--space-2); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .05em; }
