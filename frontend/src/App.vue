@@ -2032,8 +2032,8 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                     <td class="mono">{{ row.code || row.inventory_number || '—' }}</td>
                     <td>
   <div class="name-cell">
-    <strong :class="{ 'name-truncate': !expandedNames.has(row.id) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
-    <button type="button" class="name-toggle-btn" @click.prevent="toggleNameExpand(row.id)">{{ expandedNames.has(row.id) ? '▲' : '▼' }}</button>
+    <strong :class="{ 'name-truncate': !expandedNames.has(row.id) && isLongName(row) }">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
+    <button v-if="isLongName(row)" type="button" class="name-toggle-btn" @click.prevent="toggleNameExpand(row.id)">{{ expandedNames.has(row.id) ? '▲' : '▼' }}</button>
   </div>
 </td>
                     <td v-if="activeTab === 'reagent'">
