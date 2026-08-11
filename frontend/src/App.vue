@@ -2071,15 +2071,19 @@ watch(anyModalOpen, (val) => { document.body.classList.toggle('modal-open', val)
                 <div v-for="row in items" :key="row.id" class="mobile-item-card">
                   <div class="mobile-item-top">
                     <strong class="mobile-item-name">{{ row.name || row.name_ru || row.name_en || t('noName') }}</strong>
-                    <div class="row-actions">
-                      <button class="icon-btn" :title="t('edit')" @click="openEditModal(row)">✏️</button>
-                      <button class="icon-btn stock-plus" title="Пополнить" @click="toggleStock(row)">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#16a34a" fill="#dcfce7"/><rect x="7" y="3.5" width="2" height="9" rx="1" fill="#16a34a"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#16a34a"/></svg>
-                      </button>
-                      <button class="icon-btn stock-minus" :title="row.is_out_of_stock ? 'Вернуть в наличие' : 'Списать / нет в наличии'" @click="toggleStock(row)">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#dc2626" fill="#fee2e2"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#dc2626"/></svg>
-                      </button>
-                      <button v-if="isAdmin" class="icon-btn" :title="t('remove')" @click="deleteItem(row)">🗑️</button>
+                    <div class="row-actions row-actions-split">
+                      <div class="row-actions-left">
+                        <button class="icon-btn stock-plus" title="Увеличить количество" @click="changeQuantity(row, 1)">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#16a34a" fill="#dcfce7"/><rect x="7" y="3.5" width="2" height="9" rx="1" fill="#16a34a"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#16a34a"/></svg>
+                        </button>
+                        <button class="icon-btn stock-minus" title="Уменьшить количество" @click="changeQuantity(row, -1)">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.5" stroke="#dc2626" fill="#fee2e2"/><rect x="3.5" y="7" width="9" height="2" rx="1" fill="#dc2626"/></svg>
+                        </button>
+                      </div>
+                      <div class="row-actions-right">
+                        <button class="icon-btn" :title="t('edit')" @click="openEditModal(row)">✏️</button>
+                        <button v-if="isAdmin" class="icon-btn" :title="t('remove')" @click="deleteItem(row)">🗑️</button>
+                      </div>
                     </div>
                   </div>
                   <div class="mobile-item-row" v-if="row.code || row.inventory_number">
@@ -2664,9 +2668,8 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 .row-actions { display: flex; gap: .3rem; }
 .row-actions-split {
   width: 100%;
-  min-width: 158px;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-start;
+  gap: 1.25rem;
 }
 .row-actions-left,
 .row-actions-right {
@@ -2683,11 +2686,7 @@ tbody tr:hover { background: rgba(84,193,195,.06); }
 }
 .stock-plus:hover svg circle { fill: #bbf7d0; }
 .stock-minus:hover svg circle { fill: #fecaca; }
-.row-actions-split { justify-content: flex-start; gap: 1.25rem; }
-.row-actions-left, .row-actions-right { display: flex; gap: .3rem; }
-.stock-plus, .stock-minus { padding: 2px; display: inline-flex; align-items: center; justify-content: center; }
-.stock-plus:hover svg circle { fill: #bbf7d0; }
-.stock-minus:hover svg circle { fill: #fecaca; }
+
 .protocol-list { display: grid; gap: var(--space-4); width: 100%; }
 .protocol-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--color-surface-2); width: 100%; overflow-x: hidden; }
 .protocol-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap; gap: .5rem; }
