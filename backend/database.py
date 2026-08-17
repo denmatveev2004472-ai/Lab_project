@@ -16,7 +16,7 @@ if not DATABASE_URL:
     PGUSER     = os.environ.get("PGUSER", "postgres")
     PGPASSWORD = os.environ.get("PGPASSWORD", "")
     DATABASE_URL = (
-        f"postgresql+psycopg2://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
+        f"postgresql+psycopg://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
     )
 
 if DATABASE_URL.startswith("postgresql://"):

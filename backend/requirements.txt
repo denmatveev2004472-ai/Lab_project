@@ -11,6 +11,6 @@ authlib
 httpx
 python-dotenv
 alembic
-psycopg2-binary
+psycopg[binary]
 openpyxl
 python-docx

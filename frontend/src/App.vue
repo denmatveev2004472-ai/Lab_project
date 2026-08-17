@@ -2,7 +2,7 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 
-const API_BASE = import.meta.env.DEV ? 'http://192.168.1.120:8000' : window.location.origin
+const API_BASE = import.meta.env.DEV ? 'http://192.168.3.56:8000' : window.location.origin
 
 async function api(url, options) {
   const r = await fetch(`${API_BASE}${url}`, options)
@@ -990,13 +990,13 @@ const bookings = ref([])
 
 async function loadAllBookings() {
   try {
-    const offset = bookingWeek.value === 'this' ? 0 : 1
+    const offset = bookingWeekOffset.value
     const data = await api(`/api/instrument-usage?${qs({ period: 'week', offset })}`)
     bookings.value = data.results.map(u => {
       const start = new Date(u.start_time)
       const end = new Date(u.end_time)
       const duration = Math.round((end - start) / 60000)
-      const dateStr = start.toISOString().slice(0, 10)
+      const dateStr = toLocalDateStr(start)
       return {
         id: u.id, apiId: u.id, instrId: u.instrument_id,
         date: dateStr, who: u.username, experiment: u.notes || '',
@@ -1012,6 +1012,25 @@ function loadBookingData() {
   loadAllBookings()
   loadAllMaintenance()
   loadCellBookings()
+}
+
+let scheduleRefreshTimer = null
+
+function startScheduleAutoRefresh() {
+  stopScheduleAutoRefresh()
+
+  scheduleRefreshTimer = window.setInterval(() => {
+    if (activeTab.value === 'booking') {
+      loadBookingData()
+    }
+  }, 5000)
+}
+
+function stopScheduleAutoRefresh() {
+  if (scheduleRefreshTimer) {
+    window.clearInterval(scheduleRefreshTimer)
+    scheduleRefreshTimer = null
+  }
 }
 
 const selectedInstrId = ref(INSTRUMENTS[0].id)
@@ -1126,7 +1145,12 @@ function minutesToLabel(total) {
 }
 
 
-
+function toLocalDateStr(dateObj) {
+  const y = dateObj.getFullYear()
+  const mo = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const d = String(dateObj.getDate()).padStart(2, '0')
+  return `${y}-${mo}-${d}`
+}
 
 
 
@@ -1229,7 +1253,7 @@ function formatDate(d) {
   return d.toLocaleDateString(language.value === 'ru' ? 'ru-RU' : 'en-GB', { weekday: 'short', day: '2-digit', month: '2-digit' })
 }
 function toDateStr(d) {
-  return d.toISOString().slice(0, 10)
+  return toLocalDateStr(d)
 }
 
 function getBookingsForDay(instrId, dateStr) {
@@ -1357,7 +1381,7 @@ function openAdminStatusModal(instrId) {
       const from = new Date(m.date_from)
       const to = new Date(m.date_to)
       for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
-        dates.push(d.toISOString().slice(0, 10))
+        dates.push(toLocalDateStr(d))
       }
       return dates
     })
@@ -1429,7 +1453,7 @@ const cellBookingSaving = ref(false)
 
 async function loadCellBookings() {
   try {
-    const offset = cellBookingWeek.value === 'this' ? 0 : 1
+    const offset = cellBookingWeek.value
     const data = await api(`/api/cell-usage?period=week&offset=${offset}`)
     cellBookings.value = (data.results || []).map(u => {
       const start = new Date(u.start_time)
@@ -1439,7 +1463,7 @@ async function loadCellBookings() {
         id: u.id,
         apiId: u.id,
         boxNumber: u.box_number,
-        date: start.toISOString().slice(0, 10),
+        date: toLocalDateStr(start),
         who: u.user_name,
         experiment: u.experiment || '',
         duration: duration,
